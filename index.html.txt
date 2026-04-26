@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>能量金字塔·互动教学增强版（含单位说明）</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, 'Segoe UI', 'Noto Sans SC', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            background: #eef4ea;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            background: white;
+            border-radius: 36px;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+            padding: 20px 24px 32px;
+        }
+        h1 {
+            font-size: 1.8rem;
+            margin: 0 0 0.2rem 0;
+            color: #1a4d1a;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        h1 small {
+            font-size: 0.8rem;
+            font-weight: normal;
+            background: #e9ecef;
+            padding: 4px 12px;
+            border-radius: 40px;
+            color: #2c6e2c;
+        }
+        .sub {
+            color: #2d6a4f;
+            border-left: 4px solid #2d6a4f;
+            padding-left: 14px;
+            margin: 12px 0 20px 0;
+            font-weight: 450;
+            background: #f8faf6;
+            border-radius: 0 16px 16px 0;
+        }
+        .pyramid-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            margin-top: 10px;
+        }
+        .visual-area {
+            flex: 2;
+            min-width: 280px;
+            background: #fefef7;
+            border-radius: 28px;
+            padding: 20px 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .pyramid-svg-container {
+            text-align: center;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        svg {
+            display: block;
+            margin: 0 auto;
+            background: #fcfaf0;
+            border-radius: 28px;
+            cursor: pointer;
+        }
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 18px;
+            margin: 20px 0 10px;
+            font-size: 0.75rem;
+            color: #2d3e2d;
+        }
+        .legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .units-panel {
+            background: #eef3fa;
+            border-radius: 20px;
+            padding: 12px 16px;
+            margin: 15px 0 10px 0;
+            border-left: 5px solid #2c7da0;
+            font-size: 0.75rem;
+            line-height: 1.4;
+        }
+        .units-panel h5 {
+            margin: 0 0 6px 0;
+            color: #1f543f;
+            font-size: 0.8rem;
+        }
+        .detail-area {
+            margin-top: 10px;
+            background: #f4f1e1;
+            border-radius: 24px;
+            padding: 16px 20px;
+            border-left: 6px solid #3b8c3b;
+        }
+        .detail-area h4 {
+            margin: 0 0 8px 0;
+            color: #1f543f;
+        }
+        .control-area {
+            flex: 1.3;
+            min-width: 300px;
+            background: #ffffffec;
+            border-radius: 28px;
+            padding: 18px 20px;
+            box-shadow: 0 4px 14px rgba(0,32,0,0.08);
+            border: 1px solid #dde8dd;
+        }
+        .scene-selector {
+            background: #e6f0e6;
+            border-radius: 24px;
+            padding: 12px 16px;
+            margin-bottom: 18px;
+        }
+        .scene-selector label {
+            font-weight: 700;
+            margin-right: 12px;
+        }
+        select {
+            padding: 8px 14px;
+            border-radius: 60px;
+            border: 1px solid #bdd4b0;
+            background: white;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .explanation {
+            background: #fff7e0;
+            border-radius: 20px;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 0.8rem;
+            border-left: 4px solid #ffb74d;
+        }
+        .efficiency-slider {
+            margin: 20px 0;
+        }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin: 6px 0;
+            accent-color: #2e7d32;
+        }
+        .energy-input {
+            margin: 15px 0;
+            padding: 12px;
+            background: #f0f4ef;
+            border-radius: 20px;
+        }
+        .energy-input label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .energy-input input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 40px;
+            border: 1px solid #bdd4b0;
+            font-size: 1rem;
+            text-align: center;
+        }
+        .energy-range {
+            font-size: 0.7rem;
+            color: #5e6e5e;
+            margin-top: 4px;
+        }
+        .energy-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.8rem;
+        }
+        .energy-table th, .energy-table td {
+            border: 1px solid #cfdec6;
+            padding: 8px;
+            text-align: left;
+        }
+        .energy-table th {
+            background: #d9e6d9;
+            font-weight: 600;
+        }
+        .data-badge {
+            background: #e9ecef;
+            border-radius: 18px;
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            margin: 15px 0;
+            text-align: center;
+        }
+        .info-card {
+            background: #eef3e6;
+            border-radius: 24px;
+            padding: 12px 16px;
+            margin-top: 18px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            border-left: 5px solid #3b8c3b;
+        }
+        .footer-note {
+            margin-top: 24px;
+            font-size: 0.75rem;
+            color: #5a6e5a;
+            border-top: 1px solid #cfdec6;
+            padding-top: 16px;
+            text-align: center;
+        }
+        .real-data {
+            background: #fce4d6;
+            border-radius: 20px;
+            padding: 12px;
+            margin: 10px 0 5px 0;
+            font-size: 0.8rem;
+        }
+        @media (max-width: 780px) {
+            .container { padding: 16px; }
+            .visual-area, .control-area { flex: 1 1 100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>
+        🌿 能量金字塔 · 互动教学增强版
+        <small>生产者(底部) → 顶级消费者(顶部)</small>
+    </h1>
+    <div class="sub">
+        ⚡ 点击任意营养级查看详情 | 选择场景或手动调节参数 | 右侧表格实时显示各营养级获得的能量
+    </div>
+
+    <div class="pyramid-panel">
+        <!-- 左侧: 可视化区 + 单位说明 + 详情区 + 场景参考 -->
+        <div class="visual-area">
+            <div>
+                <div class="pyramid-svg-container" id="svg-container">
+                    <svg id="energyPyramid" width="500" height="420" viewBox="0 0 500 420" style="font-family: 'Segoe UI', system-ui;"></svg>
+                </div>
+                <div class="legend">
+                    <span>🌾 <strong style="color:#2b7a3e">生产者</strong> (第一营养级·底部)</span>
+                    <span>🐛 <strong style="color:#e68a2e">初级消费者</strong> (第二营养级)</span>
+                    <span>🐦 <strong style="color:#b5651e">次级消费者</strong> (第三营养级)</span>
+                    <span>🦅 <strong style="color:#ac3e2f">顶级捕食者</strong> (第四营养级·顶部)</span>
+                </div>
+            </div>
+            <!-- 单位说明面板（新增） -->
+            <div class="units-panel">
+                <h5>📐 单位小课堂</h5>
+                • <strong>千卡 (kcal)</strong>：能量的单位，1 kcal ≈ 4.2 kJ（千焦）。<br>
+                • <strong>平方米 (m²)</strong>：面积单位，这里指每平方米土地上植物固定的能量。<br>
+                • <strong>年 (a)</strong>：时间单位，表示一年内固定的总能量。<br>
+                • <strong>生产者总能量 (kcal/m²·年)</strong> = 每年每平方米通过光合作用固定的能量，是生态系统的能量“起点”。
+            </div>
+            <!-- 详情展示区 -->
+            <div class="detail-area" id="detailBox">
+                <h4>🔍 点击金字塔查看营养级详解</h4>
+                <p id="detailText">点击任意一级营养级，这里会显示该营养级的生态角色、能量数据和典型代表生物～</p>
+            </div>
+            <div class="real-data" id="realDataDisplay" style="margin-top: 12px;">
+                📍 <strong>当前场景数据参考</strong><br>
+                选择场景或调整参数，这里会显示对应生态系统的典型数据。
+            </div>
+        </div>
+
+        <!-- 右侧: 控制区（不变） -->
+        <div class="control-area">
+            <div class="scene-selector">
+                <label>🌍 生态场景选择：</label>
+                <select id="sceneSelect">
+                    <option value="cedar">🌲 赛达伯格湖 — 经典10% (总能量≈2500 kcal/m²·年)</option>
+                    <option value="qinglong">🏞️ 成都青龙湖 — 城市湖泊 (总能量≈2400 kcal/m²·年)</option>
+                    <option value="marine">🌊 热带海洋浮游链 — 高效率18% (总能量≈3500 kcal/m²·年)</option>
+                    <option value="boreal">❄️ 寒带针叶林 — 低效率5% (总能量≈1200 kcal/m²·年)</option>
+                </select>
+                <div class="explanation" id="sceneExplanation">
+                    <strong>📖 科学解释</strong><br>
+                    选择场景后，这里会解释为什么该场景的效率高或低，并自动设定典型生产者总能量。
+                </div>
+            </div>
+
+            <div class="efficiency-slider">
+                <div class="slider-label">
+                    <span>📐 能量传递效率 (可手动调节)</span>
+                    <span><strong id="efficiencyValue">10.0</strong> %</span>
+                </div>
+                <input type="range" id="efficiencySlider" min="5" max="20" step="0.5" value="10">
+                <div style="display: flex; justify-content: space-between; font-size:0.7rem;">
+                    <span>低效率 (5%)</span>
+                    <span>高效率 (20%)</span>
+                </div>
+            </div>
+
+            <div class="energy-input">
+                <label>🌱 生产者总能量 (kcal/m²·年)</label>
+                <input type="number" id="producerEnergyInput" step="50" value="2500" min="500" max="15000">
+                <div class="energy-range" id="energyRangeHint">参考范围: 500 ~ 15000 (热带雨林可达15000)</div>
+            </div>
+
+            <div class="data-badge">
+                <strong>📊 各营养级获得的能量 (kcal/m²·年)</strong>
+                <table class="energy-table" id="energyTable">
+                    <thead>
+                        <tr><th>营养级</th><th>绝对能量值 (kcal/m²·年)</th><th>典型代表生物</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr id="tableRow0"><td>🌾 生产者</td><td id="energy0">--</td><td id="species0">--</td></tr>
+                        <tr id="tableRow1"><td>🐛 初级消费者</td><td id="energy1">--</td><td id="species1">--</td></tr>
+                        <tr id="tableRow2"><td>🐦 次级消费者</td><td id="energy2">--</td><td id="species2">--</td></tr>
+                        <tr id="tableRow3"><td>🦅 顶级捕食者</td><td id="energy3">--</td><td id="species3">--</td></tr>
+                    </tbody>
+                </table>
+                <div style="font-size:0.7rem; margin-top:5px;">⚠️ 当能量＜0.2 kcal 或比例＜0.02%时，金字塔层级显示为细线（能量几乎耗尽）。</div>
+            </div>
+
+            <div class="info-card">
+                <strong>✨ 教学互动提示</strong><br>
+                • 修改“生产者总能量”：观察各营养级能量数值变化，感受生产力高低对生态系统的影响。<br>
+                • 结合效率滑条：对比“至少需要生产者”（高效率20%）和“最多养活消费者”（低效率10%）。<br>
+                • 切换场景：自动匹配典型效率与总能量，比较不同生态系统的能量流动差异。
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        <strong>📖 科学依据 & 数据来源</strong><br>
+        • 林德曼效率10%~20%；赛达伯格湖(Lindeman 1942)；成都青龙湖(彭月月等2018)；热带海洋(Pauly & Christensen 1995)；寒带针叶林(Bryant et al.1980)。<br>
+        • 净初级生产力(NPP)能量参考值来源：Biology Pages (温带落叶林5000、热带雨林15000、高草草原2000、荒漠500、近岸海洋2500等)；百度百科(热带雨林NPP均值~2200 g/m²·年，温带森林1000-2000 g/m²·年，荒漠&lt;250 g/m²·年)；NPP碳数据换算系数：1g干物质≈0.45gC≈4.25kcal。<br>
+        • 细线触发条件：能量绝对值 &lt; 0.2 或相对比例 &lt; 0.02%，科学反映能量接近耗竭状态。
+    </div>
+</div>
+
+<script>
+    // 营养级配置（从底部到顶部）
+    const trophicLevels = [
+        { name: "🌾 生产者", trophic: "第一营养级", color: "#4caf50" },
+        { name: "🐛 初级消费者", trophic: "第二营养级", color: "#ff9800" },
+        { name: "🐦 次级消费者", trophic: "第三营养级", color: "#ff6d00" },
+        { name: "🦅 顶级捕食者", trophic: "第四营养级", color: "#e53935" }
+    ];
+
+    // 不同场景的典型代表生物数据（根据权威资料整理）
+    const sceneSpecies = {
+        cedar: {
+            producer: "藻类、水生植物",
+            primary: "浮游动物(桡足类等)",
+            secondary: "小型鱼类、食虫昆虫",
+            top: "大型鱼类、水鸟"
+        },
+        qinglong: {
+            producer: "硅藻、绿藻等浮游藻类",
+            primary: "浮游动物、草鱼",
+            secondary: "小型肉食鱼类、鹭类",
+            top: "苍鹭、白鹭等大型水鸟"
+        },
+        marine: {
+            producer: "浮游硅藻、甲藻、蓝藻",
+            primary: "桡足类、磷虾等浮游动物",
+            secondary: "沙丁鱼、小型鱼类、乌贼",
+            top: "金枪鱼、海豚、鲨鱼"
+        },
+        boreal: {
+            producer: "云杉、冷杉、落叶松",
+            primary: "松鼠、雪兔、驼鹿",
+            secondary: "猞猁、狐狸",
+            top: "棕熊、狼"
+        }
+    };
+    
+    // 角色描述
+    const roleDescription = [
+        "绿色植物、藻类，通过光合作用固定太阳能，制造有机物，是生态系统的能量起点。位于金字塔最底层。",
+        "植食动物，直接以生产者为食，能量从植物转移到动物。",
+        "小型肉食动物，以植食动物为食，能量进一步传递。",
+        "食物链顶端，无天敌，能量积累最少，数量最稀少。位于金字塔最顶层。"
+    ];
+
+    // 当前参数
+    let efficiency = 10;           // 传递效率 %
+    let producerEnergy = 2500;     // 生产者总能量 kcal/m²·年
+    let energies = [0,0,0,0];      // 存储各营养级绝对能量
+
+    // 场景预设（效率 + 典型生产者总能量 + 参考范围+数据源说明）
+    const scenes = {
+        cedar: { 
+            efficiency: 10.0, 
+            producerEnergy: 2500, 
+            explanation: "🌲 赛达伯格湖（美国明尼苏达州）是林德曼1942年研究的经典湖泊。实测能量传递效率约为10%，净初级生产力中等。",
+            dataRef: "林德曼(1942) 实测效率10%，NPP约2500 kcal/m²·年",
+            range: "参考范围：1000～4000（温带湖泊常见值）",
+            rangeMin: 1000,
+            rangeMax: 4000
+        },
+        qinglong: { 
+            efficiency: 10.0, 
+            producerEnergy: 2400, 
+            explanation: "🏞️ 成都青龙湖位于龙泉驿区，是成都市最大的生态湖泊。根据成都地区植被净初级生产力(NPP约600~700gC/m²·年)换算，总能量约2400 kcal/m²·年。",
+            dataRef: "估算依据：成都市NPP研究(彭月月等,2018)",
+            range: "参考范围：2000～3000（成都平原湖泊估值）",
+            rangeMin: 2000,
+            rangeMax: 3000
+        },
+        marine: { 
+            efficiency: 18.0, 
+            producerEnergy: 3500, 
+            explanation: "🌊 热带海洋浮游食物链：浮游植物→浮游动物→小型鱼类。生长迅速，生产力高，传递效率可达15%-20%。",
+            dataRef: "Pauly & Christensen (1995) 全球海洋生态效率评估",
+            range: "参考范围：2500～5000（近岸海洋、上升流区域）",
+            rangeMin: 2500,
+            rangeMax: 5000
+        },
+        boreal: { 
+            efficiency: 5.0, 
+            producerEnergy: 1200, 
+            explanation: "❄️ 寒带针叶林：生长缓慢，木质素难以分解，恒温动物呼吸消耗大，效率低，总能量也较低。",
+            dataRef: "Bryant et al. (1980) 阿拉斯加泰加林研究",
+            range: "参考范围：800～2000（寒带森林/针叶林）",
+            rangeMin: 800,
+            rangeMax: 2000
+        }
+    };
+
+    // 根据生产者和效率计算各营养级绝对能量
+    function updateEnergies() {
+        energies[0] = producerEnergy;
+        let eff = efficiency / 100;
+        for (let i = 1; i < energies.length; i++) {
+            energies[i] = energies[i-1] * eff;
+        }
+    }
+
+    // 获取矩形宽度（基于相对比例，能量极低时显示细线）
+    function getWidth(energyVal, maxEnergy) {
+        const ratio = energyVal / maxEnergy;
+        if (energyVal < 0.2 || ratio < 0.0002) {
+            return 2;   // 细线表示能量几乎耗尽
+        }
+        let w = 40 + Math.min(1, ratio) * 280;
+        return Math.min(320, Math.max(2, w));
+    }
+
+    // 绘制金字塔
+    function drawPyramid() {
+        updateEnergies();
+        const maxE = energies[0];
+        const svg = document.getElementById("energyPyramid");
+        if (!svg) return;
+        svg.setAttribute("viewBox", "0 0 500 420");
+        const width = 500, height = 420;
+        svg.innerHTML = "";
+
+        const levels = trophicLevels.length;
+        const levelHeight = (height - 70) / levels;
+        const startY = 30;
+
+        for (let i = 0; i < levels; i++) {
+            const reverseIndex = levels - 1 - i; // 生产者(0)在底部
+            const y = startY + reverseIndex * levelHeight;
+            const h = levelHeight - 2;
+            const energyVal = energies[i];
+            const widthVal = getWidth(energyVal, maxE);
+            const xCenter = width / 2;
+            const xLeft = xCenter - widthVal/2;
+
+            // 矩形
+            let rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            rect.setAttribute("x", xLeft);
+            rect.setAttribute("y", y);
+            rect.setAttribute("width", widthVal);
+            rect.setAttribute("height", h);
+            rect.setAttribute("fill", trophicLevels[i].color);
+            rect.setAttribute("stroke", "#fff");
+            rect.setAttribute("stroke-width", "2");
+            rect.setAttribute("rx", "6");
+            rect.setAttribute("ry", "6");
+            rect.style.cursor = "pointer";
+            rect.setAttribute("data-level", i);
+            svg.appendChild(rect);
+            rect.addEventListener("click", (function(idx) {
+                return function() { showLevelDetail(idx); };
+            })(i));
+
+            // 显示文字：营养级名称 + 相对百分比
+            const percent = (energies[i] / energies[0] * 100).toFixed(2);
+            let textStr = `${trophicLevels[i].name}  (${percent}%)`;
+            let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.textContent = textStr;
+            text.setAttribute("font-size", "12");
+            text.setAttribute("font-weight", "bold");
+            text.setAttribute("fill", "#1a3f1a");
+            
+            if (widthVal >= 70) {
+                text.setAttribute("x", xCenter);
+                text.setAttribute("y", y + h/2 + 4);
+                text.setAttribute("text-anchor", "middle");
+                text.setAttribute("stroke", "#ffffff");
+                text.setAttribute("stroke-width", "0.5");
+            } else {
+                let rightX = xLeft + widthVal + 6;
+                if (rightX + 120 > width) rightX = xLeft - 120;
+                text.setAttribute("x", rightX);
+                text.setAttribute("y", y + h/2 + 4);
+                text.setAttribute("text-anchor", "start");
+                text.setAttribute("stroke", "none");
+            }
+            svg.appendChild(text);
+        }
+
+        // 底部效率说明
+        let effNote = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        effNote.textContent = `↓ 当前传递效率: ${efficiency}%  ↓  约${(100 - efficiency).toFixed(1)}% 以呼吸热散失`;
+        effNote.setAttribute("x", width/2);
+        effNote.setAttribute("y", height - 12);
+        effNote.setAttribute("text-anchor", "middle");
+        effNote.setAttribute("font-size", "11");
+        effNote.setAttribute("fill", "#4f6b4a");
+        svg.appendChild(effNote);
+
+        let titleNote = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        titleNote.textContent = "💡 宽度 = 相对能量比例 | 极细线表示能量＜0.2 kcal 或比例＜0.02%";
+        titleNote.setAttribute("x", width - 20);
+        titleNote.setAttribute("y", 20);
+        titleNote.setAttribute("text-anchor", "end");
+        titleNote.setAttribute("font-size", "10");
+        titleNote.setAttribute("fill", "#5a6e4a");
+        svg.appendChild(titleNote);
+    }
+
+    // 更新右侧表格（绝对能量值）
+    function updateEnergyTable() {
+        updateEnergies();
+        for (let i = 0; i < energies.length; i++) {
+            let val = energies[i];
+            let displayVal = val < 0.01 ? "<0.01" : val.toFixed(1);
+            document.getElementById(`energy${i}`).innerHTML = displayVal + " kcal/m²·年";
+        }
+        
+        // 更新表格中的物种信息
+        const select = document.getElementById("sceneSelect");
+        let selectedScene = select.value;
+        let species = sceneSpecies[selectedScene];
+        if(species) {
+            document.getElementById("species0").innerHTML = species.producer;
+            document.getElementById("species1").innerHTML = species.primary;
+            document.getElementById("species2").innerHTML = species.secondary;
+            document.getElementById("species3").innerHTML = species.top;
+        } else {
+            for(let i=0; i<4; i++) document.getElementById(`species${i}`).innerHTML = "--";
+        }
+    }
+
+    // 显示营养级详情
+    function showLevelDetail(levelIndex) {
+        const level = trophicLevels[levelIndex];
+        const energyAbs = energies[levelIndex];
+        const percent = (energyAbs / energies[0] * 100).toFixed(3);
+        const eff = efficiency;
+        
+        const select = document.getElementById("sceneSelect");
+        let selectedScene = select.value;
+        let speciesData = sceneSpecies[selectedScene];
+        let speciesText = "";
+        if(speciesData) {
+            switch(levelIndex) {
+                case 0: speciesText = speciesData.producer; break;
+                case 1: speciesText = speciesData.primary; break;
+                case 2: speciesText = speciesData.secondary; break;
+                case 3: speciesText = speciesData.top; break;
+                default: speciesText = "--";
+            }
+        }
+        
+        let extraMsg = "";
+        if (levelIndex === 0) {
+            extraMsg = ` 生产者固定的总能量为 ${producerEnergy} kcal/m²·年，是生态系统的起点。`;
+        } else if (levelIndex === 3) {
+            extraMsg = ` 顶级捕食者位于金字塔最顶层，获得的能量仅为 ${energyAbs < 0.01 ? '<0.01' : energyAbs.toFixed(2)} kcal/m²·年，占总能量的 ${percent}%。当前能量已接近耗竭${energyAbs < 0.2 ? '，金字塔显示为细线。' : '。'}`;
+        } else {
+            extraMsg = ` 该营养级获得的绝对能量为 ${energyAbs.toFixed(1)} kcal/m²·年，占生产者能量的 ${percent}%。传递效率为 ${eff}%。`;
+        }
+        
+        const detailHtml = `<strong>${level.name} · ${level.trophic}</strong><br>
+        📖 生态角色：${roleDescription[levelIndex]}<br>
+        🌿 典型代表生物：${speciesText}<br>
+        ⚡ 绝对能量值：${energyAbs < 0.01 ? '<0.01' : energyAbs.toFixed(2)} kcal/m²·年<br>
+        📊 相对生产者能量比例：${percent}%<br>
+        🔎 ${extraMsg}<br>
+        🌟 应用：若该营养级生物增重1kg，至少需要上一营养级提供约 ${Math.ceil(1 / (efficiency/100))} kg 有机物。`;
+        
+        document.getElementById("detailText").innerHTML = detailHtml;
+        const detailDiv = document.getElementById("detailBox");
+        detailDiv.style.background = "#f7f3e0";
+        setTimeout(() => { detailDiv.style.background = "#f4f1e1"; }, 200);
+    }
+
+    // 刷新所有UI
+    function refreshAll() {
+        updateEnergies();
+        drawPyramid();
+        updateEnergyTable();
+        
+        const select = document.getElementById("sceneSelect");
+        let selectedValue = select.value;
+        let scene = scenes[selectedValue];
+        if (Math.abs(efficiency - scene.efficiency) < 0.2 && Math.abs(producerEnergy - scene.producerEnergy) < 50) {
+            document.getElementById("sceneExplanation").innerHTML = `<strong>📖 科学解释</strong><br>${scene.explanation}`;
+            document.getElementById("realDataDisplay").innerHTML = `📍 <strong>${selectedValue==='cedar'?'赛达伯格湖':(selectedValue==='qinglong'?'成都青龙湖':(selectedValue==='marine'?'热带海洋浮游链':'寒带针叶林'))} 数据参考</strong><br>${scene.dataRef}<br>🔬 传递效率: ${scene.efficiency}% | 生产者能量: ${scene.producerEnergy} kcal/m²·年<br>🌿 代表生物信息已同步至右侧表格。<br>📊 参考范围: ${scene.range}`;
+            document.getElementById("energyRangeHint").innerHTML = `参考范围: ${scene.rangeMin} ~ ${scene.rangeMax} (${selectedValue==='cedar'?'温带湖泊':(selectedValue==='qinglong'?'成都平原湖泊':(selectedValue==='marine'?'近岸海洋/上升流区域':'寒带森林'))})`;
+            document.getElementById("producerEnergyInput").min = scene.rangeMin;
+            document.getElementById("producerEnergyInput").max = scene.rangeMax;
+        } else {
+            document.getElementById("sceneExplanation").innerHTML = `<strong>📖 自定义模式</strong><br>当前效率 ${efficiency}%，生产者总能量 ${producerEnergy} kcal/m²·年。你可以调整参数或选择预设场景对比。`;
+            document.getElementById("realDataDisplay").innerHTML = `📍 <strong>自定义参数</strong><br>传递效率 ${efficiency}%，生产者总能量 ${producerEnergy} kcal/m²·年。各营养级能量见右侧表格。`;
+            document.getElementById("energyRangeHint").innerHTML = `参考范围: 500 ~ 15000 (热带雨林可达15000)`;
+            document.getElementById("producerEnergyInput").min = 500;
+            document.getElementById("producerEnergyInput").max = 15000;
+            if(!scenes[selectedValue] || (Math.abs(efficiency - scenes[selectedValue].efficiency) > 0.2 || Math.abs(producerEnergy - scenes[selectedValue].producerEnergy) > 50)) {
+                for(let i=0; i<4; i++) document.getElementById(`species${i}`).innerHTML = "自定义场景，数据待补充";
+            }
+        }
+    }
+
+    // 设置场景
+    function setScene(sceneId) {
+        const scene = scenes[sceneId];
+        if (!scene) return;
+        efficiency = scene.efficiency;
+        producerEnergy = scene.producerEnergy;
+        document.getElementById("efficiencySlider").value = efficiency;
+        document.getElementById("efficiencyValue").innerText = efficiency.toFixed(1);
+        document.getElementById("producerEnergyInput").value = producerEnergy;
+        refreshAll();
+        document.getElementById("detailText").innerHTML = "点击任意一级营养级，可查看该营养级在所选场景中的典型代表生物和能量数据。";
+    }
+
+    // 绑定事件
+    function bindEvents() {
+        const slider = document.getElementById("efficiencySlider");
+        slider.addEventListener("input", function() {
+            efficiency = parseFloat(slider.value);
+            document.getElementById("efficiencyValue").innerText = efficiency.toFixed(1);
+            refreshAll();
+        });
+        const energyInput = document.getElementById("producerEnergyInput");
+        energyInput.addEventListener("input", function() {
+            let val = parseFloat(energyInput.value);
+            if (!isNaN(val) && val >= 0) {
+                producerEnergy = val;
+                refreshAll();
+            }
+        });
+        const sceneSelect = document.getElementById("sceneSelect");
+        sceneSelect.addEventListener("change", function() {
+            setScene(sceneSelect.value);
+        });
+    }
+
+    // 初始化
+    function init() {
+        bindEvents();
+        setScene("cedar");
+    }
+    init();
+</script>
+</body>
+</html>
